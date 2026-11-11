@@ -1,0 +1,564 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Friends Gallery</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #0b0b12;
+    color: white;
+    min-height: 100vh;
+}
+
+header {
+    text-align: center;
+    padding: 45px 20px 25px;
+}
+
+header h1 {
+    font-size: 38px;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+}
+
+header p {
+    color: #aaa;
+    font-size: 15px;
+}
+
+.container {
+    max-width: 1150px;
+    margin: auto;
+    padding: 20px;
+}
+
+.controls {
+    display: flex;
+    gap: 12px;
+    margin: 15px 0 30px;
+    flex-wrap: wrap;
+}
+
+input, select {
+    background: #191923;
+    color: white;
+    border: 1px solid #333344;
+    padding: 13px 15px;
+    border-radius: 10px;
+    font-size: 15px;
+    outline: none;
+}
+
+input {
+    flex: 1;
+    min-width: 200px;
+}
+
+select {
+    cursor: pointer;
+}
+
+input:focus, select:focus {
+    border-color: #8b5cf6;
+}
+
+.section-title {
+    font-size: 22px;
+    margin: 15px 0 20px;
+}
+
+.gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 22px;
+}
+
+.friend-card {
+    background: #171721;
+    border: 1px solid #292938;
+    border-radius: 16px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: 0.25s;
+}
+
+.friend-card:hover {
+    transform: translateY(-6px);
+    border-color: #8b5cf6;
+    box-shadow: 0 10px 30px #0008;
+}
+
+.friend-card img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    display: block;
+    background: #242432;
+}
+
+.friend-info {
+    padding: 17px;
+}
+
+.friend-info h3 {
+    font-size: 19px;
+    margin-bottom: 7px;
+}
+
+.friend-info p {
+    color: #aaa;
+    font-size: 13px;
+}
+
+.view-label {
+    color: #b69aff;
+    font-size: 13px;
+    margin-top: 12px;
+}
+
+/* PERSONAL GALLERY */
+
+#personPage {
+    display: none;
+}
+
+.back-button {
+    background: #252535;
+    color: white;
+    border: 1px solid #44445a;
+    padding: 11px 17px;
+    border-radius: 9px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-bottom: 25px;
+}
+
+.back-button:hover {
+    background: #39394e;
+}
+
+.person-heading {
+    margin-bottom: 25px;
+}
+
+.person-heading h2 {
+    font-size: 30px;
+    margin-bottom: 8px;
+}
+
+.person-heading p {
+    color: #aaa;
+}
+
+.photo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 15px;
+}
+
+.photo-grid img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 13px;
+    cursor: pointer;
+    background: #242432;
+    transition: 0.2s;
+}
+
+.photo-grid img:hover {
+    transform: scale(1.025);
+}
+
+.empty-message {
+    color: #aaa;
+    text-align: center;
+    padding: 35px 10px;
+    grid-column: 1 / -1;
+}
+
+/* IMAGE LIGHTBOX */
+
+#lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: #000e;
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+#lightbox img {
+    max-width: 95%;
+    max-height: 85vh;
+    object-fit: contain;
+    border-radius: 10px;
+}
+
+#closeLightbox {
+    position: absolute;
+    top: 20px;
+    right: 25px;
+    font-size: 35px;
+    color: white;
+    cursor: pointer;
+    background: none;
+    border: none;
+}
+
+footer {
+    text-align: center;
+    color: #666;
+    padding: 40px 15px 25px;
+    font-size: 13px;
+}
+
+@media (max-width: 600px) {
+    header h1 {
+        font-size: 30px;
+    }
+
+    .gallery, .photo-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .friend-card img, .photo-grid img {
+        height: 180px;
+    }
+
+    .friend-info {
+        padding: 12px;
+    }
+
+    .friend-info h3 {
+        font-size: 16px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>Friends Gallery</h1>
+    <p>Memories, moments and friendship.</p>
+</header>
+
+<main class="container">
+
+    <!-- HOMEPAGE -->
+    <section id="homePage">
+
+        <div class="controls">
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="Search a friend's name..."
+            >
+
+            <select id="sortSelect">
+                <option value="az">Name: A to Z</option>
+                <option value="za">Name: Z to A</option>
+            </select>
+        </div>
+
+        <h2 class="section-title">Our Friends</h2>
+
+        <div class="gallery" id="friendsGallery"></div>
+
+    </section>
+
+
+    <!-- INDIVIDUAL PERSON'S GALLERY -->
+    <section id="personPage">
+
+        <button class="back-button" onclick="goHome()">
+            ← Back to Friends
+        </button>
+
+        <div class="person-heading">
+            <h2 id="personName"></h2>
+            <p id="photoCount"></p>
+        </div>
+
+        <div class="photo-grid" id="personPhotos"></div>
+
+    </section>
+
+</main>
+
+
+<!-- IMAGE VIEWER -->
+<div id="lightbox" onclick="closeLightbox()">
+    <button id="closeLightbox" aria-label="Close">&times;</button>
+    <img id="lightboxImage" src="" alt="Enlarged photo">
+</div>
+
+
+<footer>
+    Made with friendship ❤️
+</footer>
+
+
+<script>
+
+/* =====================================================
+   ADD OR EDIT YOUR FRIENDS AND THEIR PHOTOS HERE
+   =====================================================
+
+   name  = Friend's name
+   cover = Photo shown on the homepage
+   photos = All photos shown after clicking their card
+
+   IMPORTANT:
+   Replace the example URLs with your actual image URLs.
+   Add more photos by adding more URLs inside photos: [ ]
+
+   ===================================================== */
+
+const friends = [
+
+    {
+        name: "Arman",
+
+        cover: "https://i.ibb.co/qMpL83bn/Arman-Shaikh.jpg",
+
+        photos: [
+            "https://i.ibb.co/qMpL83bn/Arman-Shaikh.jpg",
+            "https://i.ibb.co/JF0JsP4G/Whats-App-Image-2025-09-17-at-20-11-17-bf761e99.jpg",
+            "https://i.ibb.co/B5XY4njc/Gemini-Generated-Image-6qsfka6qsfka6qsf.png",
+            "https://i.ibb.co/C5pmc8Q2/Gemini-Generated-Image-vsduu7vsduu7vsdu.png",
+            "https://i.ibb.co/jvVHWrZ5/20221015-200701-2.jpg",
+            "https://i.ibb.co/jZJTjG65/IMG20230317160502-1.jpg"
+        ]
+    },
+
+    {
+        name: "Gowtham",
+
+        cover: "https://i.ibb.co/JR6jwPn4/Gowtham.jpg",
+
+        photos: [
+            "https://i.ibb.co/jvVHWrZ5/20221015-200701-2.jpg",
+            "https://i.ibb.co/JR6jwPn4/Gowtham.jpg",
+            "https://i.ibb.co/Dfq3TNWd/PGPG.png",
+            "https://i.ibb.co/Fb8h9ghJ/Screenshot-2026-06-01-17-33-23-79-6012fa4d4ddec268fc5c7112cbb265e7.jpg",
+            "https://i.ibb.co/Xx7hn7Bs/Screenshot-2026-06-01-17-33-19-95-6012fa4d4ddec268fc5c7112cbb265e7.jpg",
+            "https://i.ibb.co/F4HYgXk7/IMG-20260902-WA0067-EDIT.jpg"
+        ]
+    },
+
+    {
+        name: "Dhanvin",
+
+        cover: "https://i.ibb.co/VWPSdLF9/868773071-948131688114859-2602093965033340899-n.jpg",
+
+        photos: [
+            "https://i.ibb.co/NgL7rt3g/DSC-2241.jpg",
+            "https://i.ibb.co/sJzLgQYV/863178909-1405084214691209-3939498917230550548-n-1.jpg",
+            "https://i.ibb.co/VWPSdLF9/868773071-948131688114859-2602093965033340899-n.jpg",
+            "https://i.ibb.co/tpNFX73f/873697814-1843589873305190-9003286600255290507-n.jpg",
+            "https://i.ibb.co/0RYSHpDq/876394945-1176322421725681-8056019066973974421-n-1.jpg",
+            "https://i.ibb.co/4ZFpWvr1/870797444-1467981618579238-8679810810029102619-n.jpg",
+            "https://i.ibb.co/Ngt7LtQ8/868808419-2368604530560818-7436680084006863567-n.jpg",
+            "https://i.ibb.co/mPFxG37/863010043-28812004305093999-6836784537453386730-n.jpg"
+        ]
+    }
+
+];
+
+
+/* =====================================================
+   HOMEPAGE: DISPLAY FRIEND CARDS
+   ===================================================== */
+
+const friendsGallery = document.getElementById("friendsGallery");
+const searchInput = document.getElementById("searchInput");
+const sortSelect = document.getElementById("sortSelect");
+
+function displayFriends() {
+
+    const searchText = searchInput.value.toLowerCase();
+
+    let filteredFriends = friends.filter(friend =>
+        friend.name.toLowerCase().includes(searchText)
+    );
+
+    filteredFriends.sort((a, b) => {
+        return sortSelect.value === "az"
+            ? a.name.localeCompare(b.name)
+            : b.name.localeCompare(a.name);
+    });
+
+    friendsGallery.innerHTML = "";
+
+    if (filteredFriends.length === 0) {
+        friendsGallery.innerHTML =
+            '<p class="empty-message">No friends found.</p>';
+        return;
+    }
+
+    filteredFriends.forEach(friend => {
+
+        const card = document.createElement("div");
+        card.className = "friend-card";
+
+        const image = document.createElement("img");
+        image.src = friend.cover || friend.photos[0] || "";
+        image.alt = friend.name;
+        image.onerror = function() {
+            this.style.display = "none";
+        };
+
+        const info = document.createElement("div");
+        info.className = "friend-info";
+
+        const name = document.createElement("h3");
+        name.textContent = friend.name;
+
+        const count = document.createElement("p");
+        count.textContent = friend.photos.length + " photos";
+
+        const view = document.createElement("div");
+        view.className = "view-label";
+        view.textContent = "Click to view gallery →";
+
+        info.appendChild(name);
+        info.appendChild(count);
+        info.appendChild(view);
+
+        card.appendChild(image);
+        card.appendChild(info);
+
+        card.addEventListener("click", () => {
+            openPerson(friend.name);
+        });
+
+        friendsGallery.appendChild(card);
+    });
+}
+
+
+/* =====================================================
+   OPEN A PERSON'S PERSONAL GALLERY
+   ===================================================== */
+
+function openPerson(name) {
+
+    const friend = friends.find(person => person.name === name);
+
+    if (!friend) return;
+
+    document.getElementById("homePage").style.display = "none";
+    document.getElementById("personPage").style.display = "block";
+
+    document.getElementById("personName").textContent = friend.name;
+
+    document.getElementById("photoCount").textContent =
+        friend.photos.length + " photos in this gallery";
+
+    const photoGrid = document.getElementById("personPhotos");
+
+    photoGrid.innerHTML = "";
+
+    if (friend.photos.length === 0) {
+        photoGrid.innerHTML =
+            '<p class="empty-message">No photos added yet.</p>';
+    }
+
+    friend.photos.forEach((photoURL, index) => {
+
+        const image = document.createElement("img");
+
+        image.src = photoURL;
+        image.alt = friend.name + " photo " + (index + 1);
+        image.loading = "lazy";
+
+        image.onerror = function() {
+            this.alt = "Photo could not be loaded. Check the image URL.";
+            this.style.display = "none";
+        };
+
+        image.addEventListener("click", () => {
+            showLightbox(photoURL);
+        });
+
+        photoGrid.appendChild(image);
+    });
+
+    window.scrollTo(0, 0);
+}
+
+
+/* =====================================================
+   BACK TO HOMEPAGE
+   ===================================================== */
+
+function goHome() {
+
+    document.getElementById("personPage").style.display = "none";
+    document.getElementById("homePage").style.display = "block";
+
+    window.scrollTo(0, 0);
+}
+
+
+/* =====================================================
+   SEARCH AND SORT
+   ===================================================== */
+
+searchInput.addEventListener("input", displayFriends);
+sortSelect.addEventListener("change", displayFriends);
+
+
+/* =====================================================
+   ENLARGE A PHOTO
+   ===================================================== */
+
+function showLightbox(photoURL) {
+
+    document.getElementById("lightboxImage").src = photoURL;
+
+    document.getElementById("lightbox").style.display = "flex";
+}
+
+function closeLightbox() {
+
+    document.getElementById("lightbox").style.display = "none";
+}
+
+document.getElementById("closeLightbox").addEventListener(
+    "click",
+    closeLightbox
+);
+
+document.addEventListener("keydown", event => {
+    if (event.key === "Escape") {
+        closeLightbox();
+    }
+});
+
+
+/* =====================================================
+   START WEBSITE
+   ===================================================== */
+
+displayFriends();
+
+</script>
+
+</body>
+</html>
